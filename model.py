@@ -70,11 +70,11 @@ class CausalBERT(LightningModule):
         W_ids, W_len, W_mask, C, T, Y = batch
         # if use_mlm:
         W_len = W_len.unsqueeze(1) - 2
-        mask_class = torch.empty(W_len.shape, dtype=torch.float).uniform_()
-        mask_class = mask_class.to(W_len)
+        mask_class = torch.empty(W_len.shape, dtype=torch.float, device=self.device).uniform_()
+        # mask_class = mask_class.to(W_len)
         mask = (mask_class * W_len.float()).long() + 1
         target_words = torch.gather(W_ids, 1, mask)
-        mlm_labels = torch.ones(W_ids.shape).long() * -100
+        mlm_labels = torch.ones(W_ids.shape, device=self.device).long() * -100
         mlm_labels.to(W_ids)
         mlm_labels.scatter_(1, mask, target_words)
         W_ids.scatter_(1, mask, self.MASK_IDX)
@@ -226,8 +226,8 @@ class CausalBERT(LightningModule):
         # return np.mean(Q0 - Q1)
     
     def _make_bow_vector(self, ids, vocab_size, use_counts=False):
-        vec = torch.zeros(ids.shape[0], vocab_size)
-        ones = torch.ones_like(ids, dtype=torch.float)
+        vec = torch.zeros(ids.shape[0], vocab_size, device=self.device)
+        ones = torch.ones_like(ids, dtype=torch.float, device=self.device)
         vec.scatter_add_(1, ids, ones)
         vec[:, 1] = 0.0
         if not use_counts:
