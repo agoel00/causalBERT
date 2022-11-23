@@ -19,13 +19,15 @@ import tqdm
 import argparse
 import pandas as pd
 from collections import defaultdict
+import warnings 
+warnings.filterwarnings("ignore")
 
 class DataModule(LightningDataModule):
     def __init__(self, csv_path, batch_size=2, debug=False):
         super().__init__()
         self.batch_size = batch_size
         self.df = pd.read_csv(csv_path)
-        if debug: self.df = self.df.sample(10)
+        if debug: self.df = self.df.sample(20)
         self.texts = self.df['text']
         self.confounds = self.df['C']
         if 'T' in self.df.columns: self.treatments = self.df['T']
