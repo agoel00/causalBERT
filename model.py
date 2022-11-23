@@ -169,7 +169,8 @@ class CausalBERT(LightningModule):
 
         result = torch.vstack((g, Q0, Q1))
         result = result.transpose(1, 0)
-        return result.detach().cpu().numpy()
+
+        return result.detach().cpu()
     # def predict_step(self, batch, batch_idx):
     #     W_ids, W_len, W_mask, C, T = batch 
     #     outputs = self.bert(W_ids, attention_mask=W_mask)
@@ -189,15 +190,14 @@ class CausalBERT(LightningModule):
     #     return g.detach().cpu().item(), Q0.detach().cpu().item(), Q1.detach().cpu().item() 
 
     def on_predict_epoch_end(self, results):
-        results = np.array(results)
-        results = results.reshape(-1, 3) # shape=(steps, batchsize, 3) -> (steps*batchsize, 3)
+        results = torch.cat(results[0])
+        print(f"{results.shape}")
+        # results = results.reshape(-1, 3) # shape=(steps, batchsize, 3) -> (steps*batchsize, 3)
         # results = results[:,:,1] # shape=(b, 3[g,q0,q1], 2) -> (b, 3[g, q0, q1], 1)
-        # print(f"{results.shape}")
         # results = results.squeeze(0)
-        # print(f"{results=}")
-        g = results[:, 0]
-        Q0 = results[:, 1]
-        Q1 = results[:, 2]
+        g = results[:, 0].detach().cpu().numpy()
+        Q0 = results[:, 1].detach().cpu().numpy()
+        Q1 = results[:, 2].detach().cpu().numpy()
         # return np.mean(g), np.mean(Q0), np.mean(Q1), np.mean(Q0-Q1)
 
         console = Console()
