@@ -29,7 +29,7 @@ if __name__=='__main__':
 
     datamodule = DataModule(
         args.data,
-        batch_size=args.batch_size, debug=True
+        batch_size=args.batch_size
     )
 
     model = CausalBERT(
