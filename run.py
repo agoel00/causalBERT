@@ -11,7 +11,7 @@ warnings.filterwarnings("ignore")
 
 if __name__=='__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('mode', nargs=1, type=str)
+    parser.add_argument('mode', nargs=1, type=str, help="fit | predict")
     parser.add_argument('--model_name', default='distilbert-base-uncased', type=str)
     parser.add_argument('--num_labels', default=2, type=int)
     parser.add_argument('--g_weight', default=0.1, type=float)
